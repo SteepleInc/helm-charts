@@ -32,6 +32,7 @@ server:
     annotations:
       enabled: true
     # Enable Prometheus ServiceMonitor
+    # Use this if you installed the Prometheus Operator (https://github.com/coreos/prometheus-operator).
     serviceMonitor:
       enabled: false
       interval: 30s
@@ -335,12 +336,12 @@ elasticsearch:
   visibilityIndex: "temporal_visibility_v1_dev"
 
 prometheus:
-  enabled: false
+  enabled: true
   nodeExporter:
     enabled: false
 
 grafana:
-  enabled: false
+  enabled: true
   replicas: 1
   testFramework:
     enabled: false
@@ -391,7 +392,7 @@ grafana:
          datasource: TemporalMetrics
 
 cassandra:
-  enabled: false
+  enabled: true
   persistence:
     enabled: false
   image:
