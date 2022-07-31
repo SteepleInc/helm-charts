@@ -21,7 +21,7 @@ server:
   sidecarContainers:
   image:
     repository: temporalio/server
-    tag: 1.16.2
+    tag: 1.17.1
     pullPolicy: IfNotPresent
 
   # Global default settings (can be overridden per service)
@@ -92,70 +92,30 @@ server:
       additionalStores: {}
 
       default:
-        driver: "cassandra"
-
-        cassandra:
-          hosts: []
-          # port: 9042
-          keyspace: "temporal"
-          user: "user"
-          password: "password"
-          existingSecret: ""
-          replicationFactor: 1
-          consistency:
-            default:
-              consistency: "local_quorum"
-              serialConsistency: "local_serial"
-          # datacenter: "us-east-1a"
-          # maxQPS: 1000
-          # maxConns: 2
+        driver: "sql"
 
         sql:
-          driver: "mysql"
-          host: "mysql"
-          port: 3306
-          database: "temporal"
-          user: "temporal"
-          password: "temporal"
-          existingSecret: ""
-          secretName: ""
+          driver: "postgres"
+          host: 10.232.208.11
+          port: 5432
+          database: temporal
+          user: postgres
+          password: _PASSWORD_
           maxConns: 20
           maxConnLifetime: "1h"
-          # connectAttributes:
-            # tx_isolation: 'READ-COMMITTED'
 
       visibility:
-        driver: "cassandra"
-
-        cassandra:
-          hosts: []
-          # port: 9042
-          keyspace: "temporal_visibility"
-          user: "user"
-          password: "password"
-          existingSecret: ""
-          # datacenter: "us-east-1a"
-          # maxQPS: 1000
-          # maxConns: 2
-          replicationFactor: 1
-          consistency:
-            default:
-              consistency: "local_quorum"
-              serialConsistency: "local_serial"
+        driver: "sql"
 
         sql:
-          driver: "mysql"
-          host: "mysql"
-          port: 3306
-          database: "temporal_visibility"
-          user: "temporal"
-          password: "temporal"
-          existingSecret: ""
-          secretName: ""
+          driver: "postgres"
+          host: 10.232.208.11
+          port: 5432
+          database: temporal_visibility
+          user: postgres
+          password: _PASSWORD_
           maxConns: 20
           maxConnLifetime: "1h"
-          # connectAttributes:
-          #   tx_isolation: 'READ-COMMITTED'
 
   frontend:
     # replicaCount: 1
@@ -238,7 +198,7 @@ admintools:
   enabled: true
   image:
     repository: temporalio/admin-tools
-    tag: 1.16.2
+    tag: 1.17.1
     pullPolicy: IfNotPresent
 
   service:
@@ -314,26 +274,12 @@ web:
 
 schema:
   setup:
-    enabled: true
-    backoffLimit: 100
+    enabled: false
   update:
-    enabled: true
-    backoffLimit: 100
+    enabled: false
 
 elasticsearch:
-  enabled: true
-  replicas: 3
-  persistence:
-    enabled: false
-  imageTag: 7.16.2
-  host: elasticsearch-master-headless
-  scheme: http
-  port: 9200
-  version: "v7"
-  logLevel: "error"
-  username: ""
-  password: ""
-  visibilityIndex: "temporal_visibility_v1_dev"
+  enabled: false
 
 prometheus:
   enabled: true
@@ -372,43 +318,37 @@ grafana:
        isDefault: true
   dashboards:
      default:
-       frontend-github:
-         url: https://raw.githubusercontent.com/temporalio/temporal-dashboards/master/dashboards/frontend.json
+       server-general-github:
+         url: https://raw.githubusercontent.com/temporalio/dashboards/helm/server/server-general.json
          datasource: TemporalMetrics
-       temporal-github:
-         url: https://raw.githubusercontent.com/temporalio/temporal-dashboards/master/dashboards/temporal.json
+       sdk-general-github:
+         url: https://raw.githubusercontent.com/temporalio/dashboards/helm/sdk/sdk-general.json
          datasource: TemporalMetrics
-       history-github:
-         url: https://raw.githubusercontent.com/temporalio/temporal-dashboards/master/dashboards/history.json
+       misc-advanced-visibility-specific-github:
+         url: https://raw.githubusercontent.com/temporalio/dashboards/helm/misc/advanced-visibility-specific.json
          datasource: TemporalMetrics
-       matching-github:
-         url: https://raw.githubusercontent.com/temporalio/temporal-dashboards/master/dashboards/matching.json
+       misc-clustermonitoring-kubernetes-github:
+         url: https://raw.githubusercontent.com/temporalio/dashboards/helm/misc/clustermonitoring-kubernetes.json
          datasource: TemporalMetrics
-       clusteroverview-github:
-         url: https://raw.githubusercontent.com/temporalio/temporal-dashboards/master/dashboards/10000.json
+       misc-frontend-service-specific-github:
+         url: https://raw.githubusercontent.com/temporalio/dashboards/helm/misc/frontend-service-specific.json
          datasource: TemporalMetrics
-       common-github:
-         url: https://raw.githubusercontent.com/temporalio/temporal-dashboards/master/dashboards/common.json
+       misc-history-service-specific-github:
+         url: https://raw.githubusercontent.com/temporalio/dashboards/helm/misc/history-service-specific.json
+         datasource: TemporalMetrics
+       misc-matching-service-specific-github:
+         url: https://raw.githubusercontent.com/temporalio/dashboards/helm/misc/matching-service-specific.json
+         datasource: TemporalMetrics
+       misc-worker-service-specific-github:
+         url: https://raw.githubusercontent.com/temporalio/dashboards/helm/misc/worker-service-specific.json
          datasource: TemporalMetrics
 
 cassandra:
-  enabled: true
-  persistence:
-    enabled: false
-  image:
-    repo: cassandra
-    tag: 3.11.3
-    pullPolicy: IfNotPresent
-  config:
-    cluster_size: 3
-    ports:
-      cql: 9042
-    num_tokens: 4
-    max_heap_size: 512M
-    heap_new_size: 128M
-    seed_size: 0
-  service:
-    type: ClusterIP
+  enabled: false
 
 mysql:
   enabled: false
+
+postgresql:
+  enabled: true
+
